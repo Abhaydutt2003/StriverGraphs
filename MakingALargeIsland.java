@@ -6,23 +6,23 @@ public class MakingALargeIsland {
 
     public static void main(String args[]) {
         int matrix[][] = {
-                // { 0, 0, 0, 0, 0, 0, 0 },
-                // { 0, 1, 1, 1, 1, 0, 0 },
-                // { 0, 1, 0, 0, 1, 0, 0 },
-                // { 1, 0, 1, 0, 1, 0, 0 },
-                // { 0, 1, 0, 0, 1, 0, 0 },
-                // { 0, 1, 0, 0, 1, 0, 0 },
-                // { 0, 1, 1, 1, 1, 0, 0 },
-                { 1, 1, 0, 1, 1, 0 },
-                { 1, 1, 0, 1, 1, 0 },
-                { 1, 1, 0, 1, 1, 0 },
-                { 0, 0, 1, 0, 0, 0 },
-                { 0, 0, 1, 1, 1, 0 },
-                { 0, 0, 1, 1, 1, 0 }
+                { 0, 0, 0, 0, 0, 0, 0 },
+                { 0, 1, 1, 1, 1, 0, 0 },
+                { 0, 1, 0, 0, 1, 0, 0 },
+                { 1, 0, 1, 0, 1, 0, 0 },
+                { 0, 1, 0, 0, 1, 0, 0 },
+                { 0, 1, 0, 0, 1, 0, 0 },
+                { 0, 1, 1, 1, 1, 0, 0 },
+                // { 1, 1, 0, 1, 1, 0 },
+                // { 1, 1, 0, 1, 1, 0 },
+                // { 1, 1, 0, 1, 1, 0 },
+                // { 0, 0, 1, 0, 0, 0 },
+                // { 0, 0, 1, 1, 1, 0 },
+                // { 0, 0, 1, 1, 1, 0 }
                 // {1,1},
                 // {1,1}
         };
-        System.out.print(util2(matrix));
+        System.out.print(util3(matrix));
     }
 
     static int xdir[] = { 0, 0, 1, -1 };
@@ -90,6 +90,54 @@ public class MakingALargeIsland {
             }
         }
         ans = Math.max(ans, (d.size[0] + 1));
+        return ans;
+    }
+
+    public static int util3(int grid[][]) {
+        DisjointSet3 ds = new DisjointSet3(grid.length * grid.length);
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                if (grid[i][j] == 0) {
+                    continue;
+                } else {
+                    for (int a = 0; a < xdir.length; a++) {
+                        int x = xdir[a] + i;
+                        int y = ydir[a] + j;
+                        if (x >= 0 && y >= 0 && x < grid.length && y < grid.length && grid[x][y] == 1) {
+                            int node1 = (i * grid.length) + j;
+                            int node2 = (x * grid.length) + y;
+                            if (ds.ultimateParent(node1) != ds.ultimateParent(node2)) {
+                                ds.unionBySize(node1, node2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                if (grid[i][j] == 1) {
+                    continue;
+                } else {
+                    int smallAns = 0;
+                    HashSet<Integer> hs = new HashSet<>();
+                    for (int a = 0; a < xdir.length; a++) {
+                        int x = xdir[a] + i;
+                        int y = ydir[a] + j;
+                        if (x >= 0 && y >= 0 && x < grid.length && y < grid.length && grid[x][y] == 1) {
+                            int node = (x * grid.length) + y;
+                            hs.add(ds.ultimateParent(node));
+                        }
+                    }
+                    for (Integer parent : hs) {
+                        smallAns += (ds.size[parent]);
+                    }
+                    ans = Math.max(ans, smallAns + 1);
+                }
+            }
+        }
+        ans = Math.max(ans, ds.size[0]);
         return ans;
     }
 
